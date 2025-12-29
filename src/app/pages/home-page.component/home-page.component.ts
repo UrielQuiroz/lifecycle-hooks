@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { afterEveryRender, afterNextRender, Component, effect, OnChanges, OnInit } from '@angular/core';
 
 const log = ( ...messages: string[] ) => {
   console.log(
@@ -12,12 +12,25 @@ const log = ( ...messages: string[] ) => {
   imports: [],
   templateUrl: './home-page.component.html',
 })
-export class HomePageComponent {
+export class HomePageComponent implements OnInit, OnChanges {
 
   constructor() {
     console.log('Contructor llamado')
   }
 
+  basicEffect = effect((onCleanup) => {
+    log(
+      'effect',
+      'Disparar efectos secundarios'
+    );
+
+    onCleanup(() => {
+      log(
+        'onCleanup',
+        'Se ejecuta cuando el efecto se va a destruir'
+      )
+    })
+  })
 
   ngOnInit() {
     log(
@@ -61,5 +74,25 @@ export class HomePageComponent {
       'Runs every time the components view has been checked for changes.'
     )
   }
+  ngOnDestroy() {
+    log(
+      'ngOnDestroy',
+      'Runs once before the component is destroyed.'
+    )
+  }
+
+  afterNextRenderEffect = afterNextRender(() => {
+    log(
+      'afterNextRender',
+      'Runs once the next time that all components have been rendered to the DOM.'
+    )
+  })
+
+  afterRender = afterEveryRender(() => {
+    log(
+      'afterRender',
+      'Runs every time all components have been rendered to the DOM.'
+    )
+  })
 
 }
